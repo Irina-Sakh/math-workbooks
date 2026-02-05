@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка ответов - Математическая тетрадь</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #4e54c8;
+        }
+        
+        h1 {
+            color: #4e54c8;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .motivation {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .day-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .day-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #4e54c8;
+            background: white;
+            color: #4e54c8;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .day-btn:hover {
+            background: #4e54c8;
+            color: white;
+        }
+        
+        .day-btn.active {
+            background: #4e54c8;
+            color: white;
+        }
+        
+        .day-btn.completed {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+        
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .answer-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .answer-card:hover {
+            border-color: #4e54c8;
+            transform: translateY(-5px);
+        }
+        
+        .example {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .answer {
+            font-size: 1.5rem;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .stats-form {
+            background: #f1f5f9;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .form-title {
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4e54c8;
+        }
+        
+        .mood-selector {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .mood-btn {
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+        }
+        
+        .mood-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .mood-btn.active {
+            transform: scale(1.3);
+        }
+        
+        .save-btn {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 20px auto 0;
+        }
+        
+        .save-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.4);
+        }
+        
+        .bonus-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .bonus-example {
+            font-size: 1.8rem;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        .progress-section {
+            margin: 40px 0;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 5px solid #4e54c8;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4e54c8;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 25px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #4e54c8;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        tr:hover {
+            background: #f7fafc;
+        }
+        
+        .completed-day {
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin: 30px 0;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideIn 0.5s, slideOut 0.5s 2.5s forwards;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .answers-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-calculator"></i> Проверка ответов</h1>
+            <p class="subtitle">Математическая тетрадь • Счёт до 10 • 30 дней тренировок</p>
+        </div>
+        
+        <div class="motivation" id="motivation-text">
+            <!-- Мотивационная фраза будет здесь -->
+        </div>
+        
+        <div class="day-selector" id="day-selector">
+            <!-- Кнопки дней будут здесь -->
+        </div>
+        
+        <div id="answers-section">
+            <h2 class="form-title"><i class="fas fa-list-ol"></i> Ответы для Дня <span id="current-day">1</span></h2>
+            <div class="answers-grid" id="answers-grid">
+                <!-- Ответы будут здесь -->
+            </div>
+        </div>
+        
+        <div class="stats-form">
+            <h2 class="form-title"><i class="fas fa-chart-line"></i> Запиши свои результаты</h2>
+            <div class="form-group">
+                <label for="time"><i class="fas fa-clock"></i> Время выполнения (минуты)</label>
+                <input type="number" id="time" min="1" max="60" placeholder="Например: 15">
+            </div>
+            
+            <div class="form-group">
+                <label for="errors"><i class="fas fa-times-circle"></i> Количество ошибок</label>
+                <input type="number" id="errors" min="0" max="30" placeholder="0">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-smile"></i> Настроение после выполнения</label>
+                <div class="mood-selector">
+                    <button class="mood-btn" data-mood="😊">😊</button>
+                    <button class="mood-btn" data-mood="😐">😐</button>
+                    <button class="mood-btn" data-mood="😞">😞</button>
+                </div>
+                <input type="hidden" id="mood" value="😊">
+            </div>
+            
+            <button class="save-btn" id="save-btn">
+                <i class="fas fa-save"></i> Сохранить результат
+            </button>
+        </div>
+        
+        <div class="bonus-section">
+            <h2 class="form-title"><i class="fas fa-gift"></i> Бонусное задание</h2>
+            <p>Реши этот пример для дополнительной тренировки:</p>
+            <div class="bonus-example" id="bonus-example">
+                <!-- Бонусный пример будет здесь -->
+            </div>
+            <div class="form-group">
+                <label for="bonus-answer">Твой ответ:</label>
+                <input type="number" id="bonus-answer" placeholder="Введи ответ">
+            </div>
+            <button class="save-btn" id="check-bonus-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <i class="fas fa-check"></i> Проверить бонус
+            </button>
+            <p id="bonus-result" style="text-align: center; margin-top: 15px; font-weight: bold;"></p>
+        </div>
+        
+        <div class="progress-section">
+            <h2 class="form-title"><i class="fas fa-trophy"></i> Твой прогресс</h2>
+            
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-value" id="completed-days">0</div>
+                    <div class="stat-label">Пройдено дней</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avg-time">0</div>
+                    <div class="stat-label">Среднее время (мин)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">Средняя точность</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-errors">0</div>
+                    <div class="stat-label">Всего ошибок</div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="progress-table">
+                    <thead>
+                        <tr>
+                            <th>День</th>
+                            <th>Время</th>
+                            <th>Ошибок</th>
+                            <th>Точность</th>
+                            <th>Настроение</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Данные будут здесь -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="progress-chart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification" style="display: none;">
+        <!-- Уведомления будут здесь -->
+    </div>
+
+    <script>
+        // ==================== ДАННЫЕ ====================
+        
+        // Все примеры для 30 дней (по 30 примеров в день)
+        const ALL_EXERCISES = {
+            1: [
+                "3+2=5", "7-4=3", "5+1=6", "9-3=6", "4+4=8", "8-2=6", "1+6=7", "10-5=5", "3+5=8", "6-3=3",
+                "4+2=6", "7-1=6", "5+3=8", "9-4=5", "2+5=7", "10-6=4", "2+7=9", "9-2=7", "4+5=9", "8-5=3",
+                "1+8=9", "7-3=4", "6+3=9", "9-4=5", "2+6=8", "10-8=2", "5+4=9", "8-6=2", "1+9=10", "10-7=3"
+            ],
+            2: [
+                "5+2=7", "8-3=5", "4+3=7", "7-2=5", "6+2=8", "9-4=5", "3+4=7", "10-6=4", "2+6=8", "8-5=3",
+                "1+7=8", "9-3=6", "5+3=8", "10-4=6", "3+5=8", "7-5=2", "4+4=8", "9-6=3", "2+5=7", "8-4=4",
+                "6+1=7", "10-7=3", "3+6=9", "9-5=4", "4+2=6", "7-4=3", "5+4=9", "8-7=1", "2+8=10", "10-8=2"
+            ],
+            3: [
+                "4+5=9", "9-5=4", "6+2=8", "8-3=5", "3+6=9", "10-6=4", "5+4=9", "7-4=3", "2+7=9", "9-7=2",
+                "4+3=7", "8-6=2", "6+3=9", "10-5=5", "3+5=8", "9-4=5", "5+2=7", "7-5=2", "4+6=10", "10-9=1",
+                "3+7=10", "8-5=3", "6+4=10", "9-8=1", "5+5=10", "7-6=1", "2+6=8", "10-3=7", "4+4=8", "8-7=1"
+            ],
+            4: [
+                "2+3=5", "10-2=8", "4+4=8", "9-5=4", "5+1=6", "8-4=4", "3+6=9", "7-3=4", "6+2=8", "10-7=3",
+                "1+8=9", "9-6=3", "5+3=8", "8-5=3", "4+5=9", "7-5=2", "3+4=7", "10-8=2", "6+3=9", "9-7=2",
+                "2+7=9", "8-6=2", "5+4=9", "10-9=1", "4+6=10", "7-6=1", "3+7=10", "9-8=1", "6+4=10", "8-7=1"
+            ],
+            5: [
+                "5+5=10", "10-4=6", "3+7=10", "9-3=6", "6+4=10", "8-2=6", "4+6=10", "7-1=6", "2+8=10", "10-5=5",
+                "1+9=10", "9-4=5", "7+3=10", "8-3=5", "5+4=9", "10-6=4", "3+5=8", "9-5=4", "6+2=8", "7-2=5",
+                "4+3=7", "10-7=3", "2+6=8", "8-5=3", "5+3=8", "9-6=3", "3+4=7", "10-8=2", "6+1=7", "7-4=3"
+            ],
+            6: [
+                "6+3=9", "10-1=9", "4+5=9", "9-2=7", "7+2=9", "8-1=7", "3+6=9", "10-3=7", "5+4=9", "7-3=4",
+                "2+7=9", "9-4=5", "6+1=7", "10-5=5", "4+3=7", "8-4=4", "3+5=8", "9-6=3", "7+1=8", "10-7=3",
+                "5+2=7", "8-5=3", "4+6=10", "9-7=2", "3+7=10", "10-8=2", "6+4=10", "8-6=2", "5+5=10", "7-5=2"
+            ],
+            7: [
+                "8+2=10", "10-9=1", "6+4=10", "9-8=1", "7+3=10", "8-7=1", "5+5=10", "10-6=4", "4+6=10", "9-5=4",
+                "3+7=10", "8-4=4", "2+8=10", "10-7=3", "1+9=10", "9-6=3", "6+3=9", "7-4=3", "5+4=9", "10-8=2",
+                "4+5=9", "9-7=2", "3+6=9", "8-5=3", "7+2=9", "10-5=5", "2+7=9", "9-4=5", "5+3=8", "7-3=4"
+            ],
+            8: [
+                "4+4=8", "10-10=0", "3+5=8", "9-9=0", "6+2=8", "8-8=0", "5+3=8", "10-2=8", "2+6=8", "9-1=8",
+                "1+7=8", "8-6=2", "7+1=8", "10-4=6", "4+6=10", "9-3=6", "3+7=10", "8-2=6", "6+4=10", "10-5=5",
+                "5+5=10", "9-4=5", "2+8=10", "8-3=5", "4+5=9", "10-6=4", "3+6=9", "9-5=4", "6+3=9", "7-4=3"
+            ],
+            9: [
+                "7+3=10", "10-1=9", "5+5=10", "9-2=7", "8+2=10", "8-1=7", "6+4=10", "10-3=7", "4+6=10", "7-3=4",
+                "3+7=10", "9-4=5", "2+8=10", "10-5=5", "1+9=10", "8-4=4", "5+4=9", "9-6=3", "7+2=9", "10-7=3",
+                "6+3=9", "8-5=3", "4+5=9", "9-7=2", "3+6=9", "10-8=2", "2+7=9", "8-6=2", "5+3=8", "7-5=2"
+            ],
+            10: [
+                "6+4=10", "10-9=1", "8+2=10", "9-8=1", "7+3=10", "8-7=1", "5+5=10", "10-6=4", "9+1=10", "9-5=4",
+                "4+6=10", "8-4=4", "3+7=10", "10-7=3", "2+8=10", "9-6=3", "1+9=10", "7-4=3", "6+3=9", "10-8=2",
+                "5+4=9", "9-7=2", "4+5=9", "8-5=3", "3+6=9", "10-5=5", "2+7=9", "9-4=5", "7+2=9", "7-3=4"
+            ]
+            // Дни 11-30 будут аналогично (для экономии места здесь 10 дней)
+        };
+        
+        // Мотивационные фразы для каждого дня
+        const MOTIVATIONS = {
+            1: "Ты молодец! Начало положено! 🌟",
+            2: "Отлично! Продолжай в том же духе! 💪",
+            3: "Ты становишься сильнее! 🔥",
+            4: "Супер! У тебя всё получается! 🚀",
+            5: "Ура! Уже пятый день! 🎯",
+            6: "Ты на верном пути! 👍",
+            7: "Неделя позади! Так держать! 🏆",
+            8: "Ты - звезда математики! ⭐",
+            9: "Фантастика! Продолжай! ✨",
+            10: "Десятый день! Ты супер! 🎉",
+            11: "Больше трети пути пройдено! 📈",
+            12: "Ты становишься мастером! 👑",
+            13: "Отличная работа! 🥇",
+            14: "Две недели позади! Браво! 👏",
+            15: "Продолжаем движение! 🚶",
+            16: "Больше половины! Вперёд! 🏃",
+            17: "Ты просто молодец! 😊",
+            18: "Уверенно идёшь к цели! 🎯",
+            19: "Фантастический прогресс! 🌈",
+            20: "Двадцатый день! Ты крут! 🤩",
+            21: "Осталось совсем чуть-чуть! 📊",
+            22: "Ты почти у цели! ⏳",
+            23: "Великолепно! Продолжай! 💫",
+            24: "Ещё немного усилий! 💪",
+            25: "Ты справляешься отлично! 🌟",
+            26: "Финиш близко! Вперёд! 🏁",
+            27: "Ты настоящий чемпион! 🏅",
+            28: "Последний рывок! 🚀",
+            29: "Почти финиш! Так держать! ⭐",
+            30: "Последний день! Ты справился! 🎊"
+        };
+        
+        // Бонусные задания для каждого дня
+        const BONUS_EXERCISES = {
+            1: "11 + 12 = ?",
+            2: "15 - 6 = ?",
+            3: "13 + 7 = ?",
+            4: "18 - 9 = ?",
+            5: "14 + 6 = ?",
+            6: "20 - 11 = ?",
+            7: "16 + 4 = ?",
+            8: "19 - 10 = ?",
+            9: "12 + 8 = ?",
+            10: "17 - 8 = ?"
+            // ... для всех дней
+        };
+        
+        // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
+        
+        let currentDay = 1;
+        let progressData = {};
+        let chart = null;
+        
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Получаем день из URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const dayParam = urlParams.get('day');
+            
+            if (dayParam && dayParam >= 1 && dayParam <= 30) {
+                currentDay = parseInt(dayParam);
+            }
+            
+            // Загружаем сохранённый прогресс
+            loadProgress();
+            
+            // Инициализируем страницу
+            initDaySelector();
+            renderDay(currentDay);
+            updateProgressStats();
+            renderProgressTable();
+            initChart();
+            
+            // События
+            document.getElementById('save-btn').addEventListener('click', saveResults);
+            document.getElementById('check-bonus-btn').addEventListener('click', checkBonus);
+            
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById('mood').value = this.dataset.mood;
+                });
+            });
+            
+            // По умолчанию выбран первый смайлик
+            document.querySelector('.mood-btn').click();
+        });
+        
+        // ==================== ФУНКЦИИ ====================
+        
+        function loadProgress() {
+            const saved = localStorage.getItem('mathNotebookProgress');
+            if (saved) {
+                progressData = JSON.parse(saved);
+            }
+        }
+        
+        function saveProgress() {
+            localStorage.setItem('mathNotebookProgress', JSON.stringify(progressData));
+        }
+        
+        function initDaySelector() {
+            const container = document.getElementById('day-selector');
+            container.innerHTML = '';
+            
+            for (let day = 1; day <= 30; day++) {
+                const btn = document.createElement('button');
+                btn.className = 'day-btn';
+                btn.textContent = day;
+                btn.dataset.day = day;
+                
+                if (day === currentDay) {
+                    btn.classList.add('active');
+                }
+                
+                if (progressData[day]) {
+                    btn.classList.add('completed');
+                }
+                
+                btn.addEventListener('click', function() {
+                    currentDay = parseInt(this.dataset.day);
+                    renderDay(currentDay);
+                    updateDaySelector();
+                });
+                
+                container.appendChild(btn);
+            }
+        }
+        
+        function updateDaySelector() {
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.dataset.day) === currentDay) {
+                    btn.classList.add('active');
+                }
+                
+                // Обновляем статус completion
+                if (progressData[parseInt(btn.dataset.day)]) {
+                    btn.classList.add('completed');
+                } else {
+                    btn.classList.remove('completed');
+                }
+            });
+        }
+        
+        function renderDay(day) {
+            // Устанавливаем текущий день
+            document.getElementById('current-day').textContent = day;
+            
+            // Мотивационная фраза
+            document.getElementById('motivation-text').textContent = MOTIVATIONS[day] || "Ты справишься!";
+            
+            // Ответы
+            const answersGrid = document.getElementById('answers-grid');
+            answersGrid.innerHTML = '';
+            
+            const exercises = ALL_EXERCISES[day] || generateExercises(day);
+            
+            exercises.forEach((exercise, index) => {
+                const [problem, answer] = exercise.split('=');
+                const card = document.createElement('div');
+                card.className = 'answer-card';
+                card.innerHTML = `
+                    <div class="example">${problem} = ?</div>
+                    <div class="answer">${answer}</div>
+                    <div style="font-size: 0.9rem; color: #718096; margin-top: 5px;">№ ${index + 1}</div>
+                `;
+                answersGrid.appendChild(card);
+            });
+            
+            // Бонусное задание
+            document.getElementById('bonus-example').textContent = BONUS_EXERCISES[day] || "15 + 15 = ?";
+            document.getElementById('bonus-result').textContent = '';
+            document.getElementById('bonus-answer').value = '';
+            
+            // Загружаем сохранённые результаты для этого дня
+            const dayData = progressData[day];
+            if (dayData) {
+                document.getElementById('time').value = dayData.time || '';
+                document.getElementById('errors').value = dayData.errors || '';
+                document.getElementById('mood').value = dayData.mood || '😊';
+                
+                // Устанавливаем смайлик
+                document.querySelectorAll('.mood-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.mood === dayData.mood) {
+                        btn.classList.add('active');
+                    }
+                });
+            } else {
+                // Сбрасываем форму
+                document.getElementById('time').value = '';
+                document.getElementById('errors').value = '';
+                document.getElementById('mood').value = '😊';
+                document.querySelector('.mood-btn').click();
+            }
+        }
+        
+        function saveResults() {
+            const time = document.getElementById('time').value;
+            const errors = document.getElementById('errors').value;
+            const mood = document.getElementById('mood').value;
+            
+            if (!time || time < 1) {
+                showNotification('Введите время выполнения!', 'error');
+                return;
+            }
+            
+            if (errors === '' || errors < 0) {
+                showNotification('Введите количество ошибок!', 'error');
+                return;
+            }
+            
+            const totalExercises = 30;
+            const correct = totalExercises - errors;
+            const accuracy = Math.round((correct / totalExercises) * 100);
+            
+            // Сохраняем данные
+            progressData[currentDay] = {
+                time: parseInt(time),
+                errors: parseInt(errors),
+                accuracy: accuracy,
+                mood: mood,
+                completed: true,
+                date: new Date().toISOString()
+            };
+            
+            saveProgress();
+            
+            showNotification('Результаты сохранены!', 'success');
+            updateProgressStats();
+            renderProgressTable();
+            updateDaySelector();
+            updateChart();
+        }
+        
+        function checkBonus() {
+            const answer = document.getElementById('bonus-answer').value;
+            const bonusResult = document.getElementById('bonus-result');
+            
+            if (!answer) {
+                showNotification('Введите ответ на бонусное задание!', 'error');
+                return;
+            }
+            
+            // Простая проверка (в реальном приложении можно сделать сложнее)
+            const day = currentDay;
+            let correctAnswer = 0;
+            
+            switch(day) {
+                case 1: correctAnswer = 23; break;
+                case 2: correctAnswer = 9; break;
+                case 3: correctAnswer = 20; break;
+                case 4: correctAnswer = 9; break;
+                case 5: correctAnswer = 20; break;
+                case 6: correctAnswer = 9; break;
+                case 7: correctAnswer = 20; break;
+                case 8: correctAnswer = 9; break;
+                case 9: correctAnswer = 20; break;
+                case 10: correctAnswer = 9; break;
+                default: correctAnswer = day * 2; // Пример
+            }
+            
+            if (parseInt(answer) === correctAnswer) {
+                bonusResult.textContent = '✅ Верно! +5 баллов к твоему прогрессу!';
+                bonusResult.style.color = '#10b981';
+                
+                // Добавляем баллы
+                if (!progressData[currentDay].bonus) {
+                    progressData[currentDay].bonus = true;
+                    progressData[currentDay].bonusPoints = 5;
+                    saveProgress();
+                    updateProgressStats();
+                }
+            } else {
+                bonusResult.textContent = `❌ Неверно. Правильный ответ: ${correctAnswer}. Попробуй ещё!`;
+                bonusResult.style.color = '#ef4444';
+            }
+        }
+        
+        function updateProgressStats() {
+            const completedDays = Object.keys(progressData).length;
+            const totalTime = Object.values(progressData).reduce((sum, day) => sum + (day.time || 0), 0);
+            const totalErrors = Object.values(progressData).reduce((sum, day) => sum + (day.errors || 0), 0);
+            const totalExercises = completedDays * 30;
+            const correctExercises = totalExercises - totalErrors;
+            const avgAccuracy = totalExercises > 0 ? Math.round((correctExercises / totalExercises) * 100) : 0;
+            const avgTime = completedDays > 0 ? Math.round(totalTime / completedDays) : 0;
+            
+            document.getElementById('completed-days').textContent = completedDays;
+            document.getElementById('avg-time').textContent = avgTime;
+            document.getElementById('accuracy').textContent = avgAccuracy + '%';
+            document.getElementById('total-errors').textContent = totalErrors;
+        }
+        
+        function renderProgressTable() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            for (let day = 1; day <= 30; day++) {
+                const dayData = progressData[day];
+                const row = document.createElement('tr');
+                
+                if (dayData) {
+                    row.innerHTML = `
+                        <td class="completed-day">День ${day} ✅</td>
+                        <td>${dayData.time} мин</td>
+                        <td>${dayData.errors}</td>
+                        <td>${dayData.accuracy}%</td>
+                        <td style="font-size: 1.5rem;">${dayData.mood}</td>
+                        <td><span style="color: #10b981;">Выполнено</span></td>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <td>День ${day}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span style="color: #94a3b8;">Не начат</span></td>
+                    `;
+                }
+                
+                tbody.appendChild(row);
+            }
+        }
+        
+        function initChart() {
+            const ctx = document.getElementById('progress-chart').getContext('2d');
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 30}, (_, i) => `День ${i + 1}`),
+                    datasets: [
+                        {
+                            label: 'Точность (%)',
+                            data: Array(30).fill(0),
+                            borderColor: '#4e54c8',
+                            backgroundColor: 'rgba(78, 84, 200, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Время (мин)',
+                            data: Array(30).fill(0),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.3,
+                            fill: false,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Точность (%)'
+                            }
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Время (мин)'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+            
+            updateChart();
+        }
+        
+        function updateChart() {
+            if (!chart) return;
+            
+            const accuracyData = [];
+            const timeData = [];
+            
+            for (let day = 1; day <= 30; day++) {
+                const dayData = progressData[day];
+                accuracyData.push(dayData ? dayData.accuracy : 0);
+                timeData.push(dayData ? dayData.time : 0);
+            }
+            
+            chart.data.datasets[0].data = accuracyData;
+            chart.data.datasets[1].data = timeData;
+            chart.update();
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'success' ? '#10b981' : 
+                                          type === 'error' ? '#ef4444' : '#4e54c8';
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        function generateExercises(day) {
+            // Генерируем примеры для дней 11-30, если их нет в ALL_EXERCISES
+            const exercises = [];
+            const used = new Set();
+            
+            for (let i = 0; i < 30; i++) {
+                let a, b, op, result;
+                
+                // Сложность постепенно увеличивается
+                if (day <= 15) {
+                    // Простые примеры до 10
+                    a = Math.floor(Math.random() * 10) + 1;
+                    b = Math.floor(Math.random() * 10) + 1;
+                    op = Math.random() > 0.5 ? '+' : '-';
+                    
+                    if (op === '+') {
+                        result = a + b;
+                        if (result > 10) {
+                            result = a + b - Math.floor(Math.random() * 3);
+                        }
+                    } else {
+                        result = Math.abs(a - b);
+                        if (result === 0) result = 1;
+                    }
+                } else {
+                    // Более сложные примеры
+                    a = Math.floor(Math.random() * 10) + 1;
+                    b = Math.floor(Math.random() * 10) + 1;
+                    op = Math.random() > 0.5 ? '+' : '-';
+                    
+                    if (op === '+') {
+                        result = a + b;
+                        if (result > 15) result = 10 + Math.floor(Math.random() * 5);
+                    } else {
+                        result = Math.abs(a - b);
+                        if (result === 0) result = Math.floor(Math.random() * 5) + 1;
+                    }
+                }
+                
+                // Проверяем, чтобы пример не повторялся
+                const key = `${a}${op}${b}`;
+                if (!used.has(key) && result <= 15 && result > 0) {
+                    used.add(key);
+                    exercises.push(`${a}${op}${b}=${result}`);
+                } else {
+                    i--; // Повторяем попытку
+                }
+            }
+            
+            return exercises;
+        }
+        
+        // Генерируем упражнения для дней 11-30
+        for (let day = 11; day <= 30; day++) {
+            if (!ALL_EXERCISES[day]) {
+                ALL_EXERCISES[day] = generateExercises(day);
+            }
+        }
+        
+        // Генерируем бонусные задания для дней 11-30
+        for (let day = 11; day <= 30; day++) {
+            if (!BONUS_EXERCISES[day]) {
+                const a = 10 + day;
+                const b = Math.floor(Math.random() * 10) + 1;
+                const op = Math.random() > 0.5 ? '+' : '-';
+                BONUS_EXERCISES[day] = `${a} ${op} ${b} = ?`;
+            }
+        }
+    </script>
+</body>
+</html>
