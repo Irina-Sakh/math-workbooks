@@ -1,1 +1,41 @@
-
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Проверка: Тетрадь 1</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .day-btn { padding: 10px; margin: 5px; background: #4e54c8; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .answer { background: #f0f8ff; padding: 10px; margin: 5px; border-radius: 5px; }
+        .stats { background: #f9f9f9; padding: 20px; border-radius: 10px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>✅ Проверка ответов: Тетрадь 1</h1>
+    <p>Выберите день для проверки:</p>
+    <div id="days"></div>
+    
+    <div class="stats">
+        <h3>Ваш прогресс:</h3>
+        <p id="progress">Дней пройдено: 0/30</p>
+    </div>
+    
+    <script>
+        // Простой скрипт
+        for(let i = 1; i <= 30; i++) {
+            document.getElementById('days').innerHTML += 
+                `<button class="day-btn" onclick="showDay(${i})">День ${i}</button>`;
+        }
+        
+        function showDay(day) {
+            alert('Ответы для дня ' + day + ' скоро будут здесь!');
+        }
+        
+        // Проверяем сохранённый прогресс
+        if(localStorage.getItem('math-progress')) {
+            document.getElementById('progress').textContent = 
+                'Дней пройдено: ' + localStorage.getItem('math-progress');
+        }
+    </script>
+</body>
+</html>
